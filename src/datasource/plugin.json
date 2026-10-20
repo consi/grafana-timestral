@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "Timestral",
+  "id": "consi-timestral-datasource",
+  "backend": true,
+  "executable": "gpx_timestral_ds",
+  "metrics": true,
+  "alerting": true,
+  "info": {
+    "keywords": ["datasource", "forecast", "timestral", "prediction", "alerting"],
+    "description": "Forecasts of any data source's queries, for panels and alert rules",
+    "author": {
+      "name": "Marek Wajdzik",
+      "url": "https://github.com/consi/grafana-timestral"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "version": "%VERSION%",
+    "updated": "%TODAY%",
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/consi/grafana-timestral"
+      },
+      {
+        "name": "Timestral",
+        "url": "https://mistral.ai/news/timestral/"
+      }
+    ]
+  },
+  "dependencies": {
+    "grafanaDependency": ">=12.3.0",
+    "plugins": []
+  }
+}

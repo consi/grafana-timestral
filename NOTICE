@@ -1,0 +1,26 @@
+grafana-timestral
+Copyright 2026 Marek Wajdzik (https://github.com/consi/grafana-timestral)
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product is not affiliated with or endorsed by Mistral AI. "Timestral" and "Mistral" are
+names of Mistral AI, used here only to describe the model the plugin runs.
+
+-------------------------------------------------------------------------------
+Timestral inference code (pkg/timestral)
+
+pkg/timestral is a Go translation of the Timestral reference implementation
+(https://github.com/mistralai/timestral, the `timestral` Python package), modified:
+re-implemented in Go, inference only, loading weights from memory.
+Copyright 2026 Mistral AI. Licensed under the Apache License, Version 2.0.
+
+-------------------------------------------------------------------------------
+Timestral-209M model weights (compiled into the plugin backend; fetched at build time by
+scripts/fetch-model.sh)
+
+Attribution notice: 2026 - Mistral AI
+The weights are licensed under Mistral AI's Modified MIT License, included as model/LICENSE
+in every plugin archive. It is NOT the Apache License: among other conditions, it does not
+authorize use by companies (or employees of companies) whose global consolidated monthly
+revenue exceeds USD 20 million; such users need a commercial license from Mistral AI
+(sales@mistral.ai). The restriction applies to the model and works combined with it,
+including this plugin package.

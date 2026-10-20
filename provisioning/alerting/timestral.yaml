@@ -1,0 +1,59 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: timestral
+      folder: Timestral alerts
+      interval: 1m
+      rules:
+        - uid: timestral-cpu-eta
+          title: CPU utilization forecast above 80% within 3h
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 172800
+                to: 0
+              datasourceUid: timestral
+              model:
+                band: "80"
+                datasource:
+                    type: consi-timestral-datasource
+                    uid: timestral
+                horizon: 6h
+                inputs:
+                    - datasource:
+                        type: prometheus
+                        uid: prometheus
+                      query:
+                        expr: 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+                        legendFormat: cpu
+                      refId: inA
+                      role: target
+                intervalMs: 300000
+                maxDataPoints: 600
+                output: eta
+                refId: A
+                threshold: 0.8
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10800
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            summary: 'Timestral forecasts {{ $labels.series }} ({{ $labels.forecast }}) above 80% {{ if lt $values.A.Value 1e299 }}in {{ humanizeDuration $values.A.Value }}{{ else }}not within the 6h horizon{{ end }}'
+          labels:
+            severity: warning
+          isPaused: false

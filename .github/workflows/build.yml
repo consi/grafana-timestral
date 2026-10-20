@@ -1,0 +1,101 @@
+# Builds, tests and packages the plugin for one platform. The Timestral-209M weights are
+# downloaded at build time (scripts/fetch-model.sh verifies checksum and license) and compiled
+# into the backend binary, so every platform gets its own archive.
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: Mage build target, e.g. build:linux or build:darwinARM64
+        type: string
+        default: build:linux
+      checks:
+        description: Run lint and tests
+        type: boolean
+        default: true
+    outputs:
+      version:
+        description: Plugin version from package.json
+        value: ${{ jobs.build.outputs.version }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ inputs.platform }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Plugin version
+        id: meta
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Frontend checks
+        if: inputs.checks
+        run: |
+          npm run typecheck
+          npm run lint
+          npm run test:ci
+
+      - name: Build frontend
+        run: npm run build
+
+      # The weights are not in git: cache them between runs, keyed by their pinned checksum.
+      - name: Cache Timestral-209M weights
+        uses: actions/cache@v6
+        with:
+          path: .model-cache
+          key: timestral-209m-${{ hashFiles('scripts/fetch-model.sh') }}
+
+      - name: Fetch Timestral-209M weights
+        run: npm run build:model
+
+      - name: Backend checks (incl. parity with the reference implementation)
+        if: inputs.checks
+        run: |
+          go vet ./pkg/...
+          go test ./pkg/...
+
+      - name: Build backend
+        run: go run github.com/magefile/mage ${{ inputs.platform }} build:generateManifestFile
+
+      - name: Package
+        run: sh scripts/package.sh
+
+      - name: Validate plugin metadata
+        run: |
+          for zip in artifacts/*.zip; do
+            docker run --pull=always -v "$PWD/artifacts:/artifacts" grafana/plugin-validator-cli \
+              -analyzer=metadatavalid "/artifacts/$(basename "$zip")"
+          done
+
+      - name: Artifact name
+        id: artifact
+        run: echo "name=consi-timestral-app-${{ steps.meta.outputs.version }}-$(echo '${{ inputs.platform }}' | tr ':' '-')" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: artifacts/
+          compression-level: 0
+          retention-days: 7

@@ -1,0 +1,368 @@
+{
+  "uid": "timestral-demo",
+  "title": "Timestral demo",
+  "schemaVersion": 41,
+  "time": {
+    "from": "now-3d",
+    "to": "now+1d"
+  },
+  "refresh": "",
+  "panels": [
+    {
+      "id": 1,
+      "type": "consi-timestral-panel",
+      "title": "CPU utilization",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+          "legendFormat": "CPU",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "maxDataPoints": 1500,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "enabled": true,
+        "horizon": "auto",
+        "band": "80",
+        "fillOpacity": 20,
+        "maxSeries": 10,
+        "showToolbar": true
+      }
+    },
+    {
+      "id": 2,
+      "type": "consi-timestral-panel",
+      "title": "Prometheus samples ingested /s",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(prometheus_tsdb_head_samples_appended_total[5m]))",
+          "legendFormat": "samples/s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "maxDataPoints": 1500,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "enabled": true,
+        "horizon": "auto",
+        "band": "80",
+        "fillOpacity": 20,
+        "maxSeries": 10,
+        "showToolbar": true
+      }
+    },
+    {
+      "id": 3,
+      "type": "consi-timestral-panel",
+      "title": "Prometheus query API requests /s",
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(prometheus_http_requests_total{handler=\"/api/v1/query\"}[5m]))",
+          "legendFormat": "requests/s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "maxDataPoints": 1500,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "enabled": true,
+        "horizon": "auto",
+        "band": "80",
+        "fillOpacity": 20,
+        "maxSeries": 10,
+        "showToolbar": true
+      }
+    },
+    {
+      "id": 4,
+      "type": "consi-timestral-panel",
+      "title": "Memory available",
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(node_memory_MemAvailable_bytes)",
+          "legendFormat": "available",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "maxDataPoints": 1500,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "enabled": true,
+        "horizon": "auto",
+        "band": "80",
+        "fillOpacity": 20,
+        "maxSeries": 10,
+        "showToolbar": true
+      }
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Timestral data source \u00b7 stock Grafana panels, usable in alert rules",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Disk busy (sum over devices) \u00b7 written bytes as covariate + hour of day",
+      "datasource": {
+        "type": "consi-timestral-datasource",
+        "uid": "timestral"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 16,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "consi-timestral-datasource",
+            "uid": "timestral"
+          },
+          "inputs": [
+            {
+              "refId": "inA",
+              "role": "target",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "query": {
+                "refId": "inA",
+                "expr": "sum(rate(node_disk_io_time_seconds_total[5m]))",
+                "legendFormat": "disk busy"
+              }
+            },
+            {
+              "refId": "inB",
+              "role": "past",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "query": {
+                "refId": "inB",
+                "expr": "sum(rate(node_disk_written_bytes_total[5m]))",
+                "legendFormat": "written bytes/s"
+              }
+            }
+          ],
+          "horizon": "auto",
+          "band": "80",
+          "output": "forecast",
+          "includeHistory": true,
+          "thresholdDirection": "above",
+          "calendar": [
+            "hour_of_day"
+          ],
+          "joint": false,
+          "maxSeries": 20,
+          "symmetricAveraging": true,
+          "clipNonnegative": true,
+          "maxContext": 0,
+          "blockPatches": 32,
+          "quantileCapK": 10000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "CPU above 80% in",
+      "datasource": {
+        "type": "consi-timestral-datasource",
+        "uid": "timestral"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 21,
+        "w": 8,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "consi-timestral-datasource",
+            "uid": "timestral"
+          },
+          "inputs": [
+            {
+              "refId": "inA",
+              "role": "target",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "query": {
+                "refId": "inA",
+                "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+                "legendFormat": "CPU"
+              }
+            }
+          ],
+          "horizon": "auto",
+          "band": "80",
+          "output": "eta",
+          "includeHistory": false,
+          "thresholdDirection": "above",
+          "calendar": [],
+          "joint": false,
+          "maxSeries": 20,
+          "symmetricAveraging": true,
+          "clipNonnegative": true,
+          "maxContext": 0,
+          "blockPatches": 32,
+          "quantileCapK": 10000,
+          "threshold": 0.8
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dtdurations",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 10800,
+                "color": "orange"
+              },
+              {
+                "value": 43200,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "orientation": "horizontal"
+      }
+    }
+  ],
+  "tags": [
+    "timestral"
+  ]
+}

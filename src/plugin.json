@@ -1,0 +1,88 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "app",
+  "name": "Timestral",
+  "id": "consi-timestral-app",
+  "info": {
+    "keywords": ["app", "forecast", "timestral", "mistral", "prediction", "alerting"],
+    "description": "Forecast any time series in Grafana with Mistral's Timestral model",
+    "author": {
+      "name": "Marek Wajdzik",
+      "url": "https://github.com/consi/grafana-timestral"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "screenshots": [
+      {
+        "name": "Forecast with a quantile fan",
+        "path": "img/screenshots/forecast-fan.jpg"
+      },
+      {
+        "name": "Forecast inputs and options",
+        "path": "img/screenshots/forecast-settings.jpg"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%",
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/consi/grafana-timestral"
+      },
+      {
+        "name": "Timestral",
+        "url": "https://mistral.ai/news/timestral/"
+      }
+    ]
+  },
+  "includes": [
+    {
+      "type": "page",
+      "name": "Overview",
+      "path": "/a/%PLUGIN_ID%/overview",
+      "addToNav": true,
+      "defaultNav": true
+    },
+    {
+      "type": "panel",
+      "name": "Timestral Forecast",
+      "path": "panels/forecast/plugin.json"
+    },
+    {
+      "type": "datasource",
+      "name": "Timestral",
+      "path": "datasource/plugin.json"
+    },
+    {
+      "type": "page",
+      "icon": "cog",
+      "name": "Configuration",
+      "path": "/plugins/%PLUGIN_ID%",
+      "role": "Admin",
+      "addToNav": true
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=12.3.0",
+    "plugins": [],
+    "extensions": {
+      "exposedComponents": ["grafana/add-to-dashboard-form/v1"]
+    }
+  },
+  "extensions": {
+    "addedLinks": [
+      {
+        "targets": ["grafana/dashboard/panel/menu"],
+        "title": "Forecast with Timestral",
+        "description": "Forecast the series of this panel with Mistral Timestral"
+      },
+      {
+        "targets": ["grafana/explore/toolbar/action"],
+        "title": "Forecast with Timestral",
+        "description": "Forecast the current Explore results with Mistral Timestral"
+      }
+    ]
+  }
+}

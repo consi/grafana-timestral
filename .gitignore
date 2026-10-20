@@ -1,0 +1,27 @@
+# Dependencies and build output
+node_modules/
+dist/
+artifacts/
+coverage/
+.eslintcache
+
+# Bundled model weights (fetched at build time by scripts/fetch-model.sh)
+.model-cache/
+
+# Local dev settings (e.g. PROMETHEUS_URL)
+.env
+
+# e2e
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Logs and editors
+*.log
+.DS_Store
+.idea
+
+# Model checkpoint compiled into the binary (scripts/fetch-model.sh)
+pkg/model/weights/
